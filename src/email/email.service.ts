@@ -1,10 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
+
 import { envs } from '../config/envs';
 
 @Injectable()
 export class EmailService {
-  private transporter = nodemailer.createTransport({
+  private readonly logger = new Logger(EmailService.name);
+
+  private readonly transporter = nodemailer.createTransport({
     service: envs.mailer.service,
     auth: {
       user: envs.mailer.user,
@@ -17,11 +20,6 @@ export class EmailService {
     subject: string,
     template: string,
   ): Promise<void> {
-
-    await this.transporter.verify();
-
-    console.log('Conexión con Gmail correcta');
-
     await this.transporter.sendMail({
       from: envs.mailer.user,
       to,
@@ -29,6 +27,6 @@ export class EmailService {
       html: template,
     });
 
-    console.log('Correo enviado correctamente');
+    this.logger.log(`Correo enviado a ${to}`);
   }
 }

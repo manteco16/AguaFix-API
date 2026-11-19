@@ -1,25 +1,32 @@
+
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeepPartial, Repository } from 'typeorm';
 
 import { Report } from './entities/report.entity';
+import { CreateReportDto } from './dtos/create-report.dto';
 
 @Injectable()
 export class ReportsRepository {
-
   constructor(
     @InjectRepository(Report)
     private readonly repository: Repository<Report>,
   ) {}
 
-  async create(report: Partial<Report>): Promise<Report> {
-    const newReport = this.repository.create(report);
+  async create(
+    createReportDto: CreateReportDto,
+    photoUrl: string,
+  ): Promise<Report> {
+    const report = this.repository.create({
+      ...createReportDto,
+      photoUrl,
+    } as DeepPartial<Report>);
 
-    return await this.repository.save(newReport);
+    return this.repository.save(report);
   }
 
   async findAll(): Promise<Report[]> {
-    return await this.repository.find({
+    return this.repository.find({
       order: {
         createdAt: 'DESC',
       },

@@ -1,23 +1,26 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
-import * as dotenv from 'dotenv';
 
-dotenv.config();
+import { envs } from '../config/envs';
+import { User } from '../auth/entities/user.entity';
+import { Report } from '../reports/entities/report.entity';
 
 const dataSource = new DataSource({
   type: 'postgres',
+  host: envs.database.host,
+  port: envs.database.port,
+  username: envs.database.username,
+  password: envs.database.password,
+  database: envs.database.database,
 
-  host: '127.0.0.1',
-  port: 5432,
+  entities: [User, Report],
 
-  username: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-
-  entities: ['src/**/*.entity.ts'],
-  migrations: ['src/db/migrations/*.ts'],
+  // En producción las migraciones compiladas viven en dist/db/migrations.
+  // El comando se ejecuta desde la raíz del proyecto (/app dentro del contenedor).
+  migrations: ['dist/db/migrations/*.js'],
 
   synchronize: false,
+  logging: false,
 });
 
 export default dataSource;

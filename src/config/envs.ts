@@ -4,6 +4,10 @@ import * as env from 'env-var';
 dotenv.config();
 
 export const envs = {
+  port: env.get('PORT').default('3000').asPortNumber(),
+
+  corsOrigins: env.get('CORS_ORIGINS').default('').asString(),
+
   mailer: {
     service: env.get('MAILER_SERVICE').required().asString(),
     user: env.get('MAILER_USER').required().asString(),
@@ -21,4 +25,9 @@ export const envs = {
   },
 
   mapboxToken: env.get('MAPBOX_TOKEN').asString(),
+
+  aws: {
+    region: env.get('AWS_REGION').required().asString(),
+    bucket: env.get('AWS_S3_BUCKET').required().asString(),
+  },
 };
